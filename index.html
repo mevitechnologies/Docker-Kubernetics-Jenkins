@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DevOps Learning Guide | Mevi Technologies</title>
+<meta name="description" content="A detailed practical guide to Git, Jenkins, Docker, Nginx, CI/CD, and Kubernetes with diagrams, commands, and troubleshooting.">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+ <div class="container-fluid px-lg-4">
+  <a class="navbar-brand d-flex align-items-center gap-2" href="#top"><span class="brand-logo"><img src="https://www.mevitechnologies.com/static/img/MeviLOGO.png" alt="Mevi Technologies logo"></span><span>MEVI TECHNOLOGIES<small>DEVOPS LEARNING GUIDE</small></span></a>
+  <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+  <div class="collapse navbar-collapse" id="mainNav"><div class="ms-auto d-flex flex-column flex-lg-row gap-2 mt-3 mt-lg-0"><input id="searchBox" class="form-control form-control-sm" placeholder="Search notes · press Enter"><a href="#lab" class="btn btn-warning btn-sm fw-bold">Start hands-on lab</a><button id="printBtn" class="btn btn-outline-light btn-sm"><i class="bi bi-printer"></i> Print / PDF</button></div></div>
+ </div>
+</nav>
+
+<header class="hero" id="top">
+ <div class="container py-5">
+  <div class="row align-items-center g-5">
+   <div class="col-lg-8">
+    <div class="eyebrow"><span class="live-dot"></span> BUILD IT, AUTOMATE IT, DEPLOY IT</div>
+    <h1>Git + Jenkins + <span>Docker</span> + Kubernetes</h1>
+    <p class="lead">From a source-code commit to an automated build, a running website, and a Kubernetes deployment. These notes explain every term, where to type each command, what success looks like, and how to troubleshoot common failures.</p>
+    <div class="d-flex flex-wrap gap-2 mt-4"><a class="btn btn-primary btn-lg" href="#lab">Start the lab <i class="bi bi-arrow-right"></i></a><a class="btn btn-outline-primary btn-lg" href="#architecture">See the big picture</a></div>
+    <div class="hero-tags mt-4"><span><i class="bi bi-check-circle-fill"></i> VS Code instructions</span><span><i class="bi bi-terminal-fill"></i> Copyable commands</span><span><i class="bi bi-image-fill"></i> Visual diagrams</span></div>
+   </div>
+   <div class="col-lg-4">
+    <div class="hero-illustration">
+     <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+     <div class="central-cube"><i class="bi bi-boxes"></i><strong>DevOps</strong><small>Continuous delivery</small></div>
+     <div class="float-chip chip-git"><i class="bi bi-git"></i> Git</div><div class="float-chip chip-jenkins"><i class="bi bi-gear-fill"></i> Jenkins</div><div class="float-chip chip-docker"><i class="bi bi-box-seam-fill"></i> Docker</div><div class="float-chip chip-kube"><i class="bi bi-diagram-3-fill"></i> Kubernetes</div>
+    </div>
+   </div>
+  </div>
+ </div>
+</header>
+
+<div class="container-fluid"><div class="row">
+<aside class="col-lg-3 col-xl-2 sidebar p-3">
+ <div class="side-heading">PAGE NAVIGATION</div>
+ <nav id="sideNav" class="nav flex-column">
+  <a class="nav-link active" href="#how">How to use notes</a>
+  <a class="nav-link" href="#agenda">Learning roadmap</a>
+  <a class="nav-link" href="#terms">Key concepts</a>
+  <a class="nav-link" href="#architecture">How everything combines</a>
+  <a class="nav-link" href="#git">1 · Git and GitHub</a>
+  <a class="nav-link" href="#website">2 · Build website</a>
+  <a class="nav-link" href="#docker">3 · Docker + Nginx</a>
+  <a class="nav-link" href="#jenkins">4 · Jenkins setup</a>
+  <a class="nav-link" href="#pipeline">5 · CI/CD pipeline</a>
+  <a class="nav-link" href="#kubernetes">6 · Kubernetes</a>
+  <a class="nav-link" href="#troubleshoot">Errors and fixes</a>
+  <a class="nav-link" href="#deliverable">Final deliverable</a>
+  <a class="nav-link" href="#quiz">Quiz</a>
+ </nav>
+ <div class="progress-card mt-4"><div class="d-flex justify-content-between"><small>Lab progress</small><strong id="progressText">0%</strong></div><div class="progress mt-2"><div id="progressBar" class="progress-bar" style="width:0%"></div></div><div id="progressTasks" class="mt-3"></div></div>
+</aside>
+
+<main class="col-lg-9 col-xl-10 main-content">
+<section id="how" class="content-section">
+ <div class="section-label label-blue">READ THIS FIRST</div><h2>How to follow the tutorial without confusion</h2>
+ <div class="callout callout-blue"><strong>Each instruction says where to work.</strong> Do not paste every command at once. Run one command, wait for its result, and continue only if it succeeds.</div>
+ <div class="row g-3">
+  <div class="col-md-4"><div class="place-card editor"><div class="place-icon"><i class="bi bi-file-earmark-code-fill"></i></div><h3>VS Code editor</h3><p>Create/edit files such as <code>index.html</code>, <code>style.css</code>, <code>Dockerfile</code>, <code>Jenkinsfile</code>, and YAML files.</p><span class="mini-tag">File content goes here</span></div></div>
+  <div class="col-md-4"><div class="place-card terminal"><div class="place-icon"><i class="bi bi-terminal-fill"></i></div><h3>VS Code terminal</h3><p>Choose <b>Terminal → New Terminal</b>. Type commands such as <code>git status</code>, <code>docker build</code>, and <code>kubectl get pods</code>.</p><span class="mini-tag">Commands go here</span></div></div>
+  <div class="col-md-4"><div class="place-card browser"><div class="place-icon"><i class="bi bi-browser-chrome"></i></div><h3>Web browser</h3><p>Open the given URL after the container or service is running. Keep any terminal command that says “keep running” open.</p><span class="mini-tag">Test the result here</span></div></div>
+ </div>
+ <div class="callout callout-amber mt-3"><strong>Prerequisites:</strong> Docker Desktop is installed and running; Git is installed; VS Code is installed; you can sign in to GitHub. Enable Kubernetes in Docker Desktop when the Kubernetes section tells you to. Keep around 4 GB or more of available memory if possible; Jenkins and a local Kubernetes cluster can be resource-heavy.</div>
+ <p class="mb-0"><b>Safety note:</b> This is a local training lab. Do not paste passwords, access tokens, or confidential data into code or screenshots. Jenkins access to a Docker daemon can be highly privileged; use only a trusted learning guide machine.</p>
+</section>
+
+<section id="agenda" class="content-section">
+ <div class="section-label label-purple">SESSION FLOW</div><h2>Learning roadmap</h2>
+ <div class="agenda-grid">
+  <article class="agenda-card a1"><span>01</span><h3>Git + GitHub</h3><p>Store source code, commit changes, and push to a remote repository.</p><small>Outcome: source code online</small></article>
+  <article class="agenda-card a2"><span>02</span><h3>Website</h3><p>Create a colourful HTML/CSS page and test it in a browser.</p><small>Outcome: working web page</small></article>
+  <article class="agenda-card a3"><span>03</span><h3>Docker + Nginx</h3><p>Build an image and run a container with a published port.</p><small>Outcome: localhost website</small></article>
+  <article class="agenda-card a4"><span>04</span><h3>Jenkins</h3><p>Connect Jenkins to GitHub and execute a Pipeline from a Jenkinsfile.</p><small>Outcome: automated build</small></article>
+  <article class="agenda-card a5"><span>05</span><h3>Kubernetes</h3><p>Deploy the image, expose it through a Service, and scale replicas.</p><small>Outcome: running Pods</small></article>
+  <article class="agenda-card a6"><span>06</span><h3>Debug + review</h3><p>Read logs, inspect status, solve errors, and explain the whole workflow.</p><small>Outcome: explain the pipeline</small></article>
+ </div>
+</section>
+
+<section id="terms" class="content-section">
+ <div class="section-label label-green">CORE CONCEPTS</div><h2>Every tool: what it is, why it exists, and what it does</h2>
+ <div class="callout callout-blue"><strong>How to think about the complete system:</strong> Git keeps a history of source-code changes. GitHub stores a shared copy of that repository. Jenkins reads a selected revision and runs repeatable pipeline steps. Docker turns the application and its runtime requirements into an image, then runs that image as a container. Kubernetes manages containers across Pods, keeps the requested number of replicas running, and provides a stable way to reach them. These tools solve different problems; they work together rather than replacing one another.</div>
+
+ <div class="tool-grid">
+  <article class="tool-card git-card"><div class="tool-top"><div class="tool-symbol"><i class="bi bi-git"></i></div><span>VERSION CONTROL</span></div><h3>Git</h3><p>A version-control system that records changes to files as commits.</p><div class="term-row"><b>Why?</b><span>Track changes, compare versions, work on branches, and recover earlier work.</span></div><div class="term-row"><b>Input</b><span>Files and developer commands.</span></div><div class="term-row"><b>Output</b><span>A local repository history.</span></div><a href="https://www.google.com/search?tbm=isch&q=Git+version+control+logo+diagram" target="_blank" rel="noopener">Find Git images <i class="bi bi-box-arrow-up-right"></i></a></article>
+  <article class="tool-card github-card"><div class="tool-top"><div class="tool-symbol"><i class="bi bi-github"></i></div><span>REMOTE REPOSITORY</span></div><h3>GitHub</h3><p>An online platform that hosts Git repositories and supports collaboration.</p><div class="term-row"><b>Why?</b><span>Share code and let Jenkins retrieve a committed version.</span></div><div class="term-row"><b>Input</b><span>Commits pushed from Git.</span></div><div class="term-row"><b>Output</b><span>A remote source repository.</span></div><a href="https://www.google.com/search?tbm=isch&q=GitHub+logo+repository+workflow" target="_blank" rel="noopener">Find GitHub images <i class="bi bi-box-arrow-up-right"></i></a></article>
+  <article class="tool-card jenkins-card"><div class="tool-top"><div class="tool-symbol"><i class="bi bi-gear-wide-connected"></i></div><span>AUTOMATION SERVER</span></div><h3>Jenkins</h3><p>An automation server that runs jobs and pipelines for building, testing, and delivering software.</p><div class="term-row"><b>Why?</b><span>Replace repetitive manual build steps with a repeatable process.</span></div><div class="term-row"><b>Input</b><span>Source code, Jenkinsfile, configured tools.</span></div><div class="term-row"><b>Output</b><span>Build logs, artifacts, images, and deployment actions.</span></div><a href="https://www.google.com/search?tbm=isch&q=Jenkins+CI+CD+pipeline+logo+diagram" target="_blank" rel="noopener">Find Jenkins images <i class="bi bi-box-arrow-up-right"></i></a></article>
+  <article class="tool-card docker-card"><div class="tool-top"><div class="tool-symbol"><i class="bi bi-box-seam-fill"></i></div><span>CONTAINER PLATFORM</span></div><h3>Docker</h3><p>Builds images and runs containers that package applications with their runtime files.</p><div class="term-row"><b>Why?</b><span>Make application delivery more consistent across compatible environments.</span></div><div class="term-row"><b>Input</b><span>Dockerfile and project files.</span></div><div class="term-row"><b>Output</b><span>Image and running container.</span></div><a href="https://www.google.com/search?tbm=isch&q=Docker+image+container+architecture+diagram" target="_blank" rel="noopener">Find Docker images <i class="bi bi-box-arrow-up-right"></i></a></article>
+  <article class="tool-card nginx-card"><div class="tool-top"><div class="tool-symbol"><i class="bi bi-globe2"></i></div><span>WEB SERVER</span></div><h3>Nginx (“engine-x”)</h3><p>A web server that can serve static files and also act as a reverse proxy or load balancer.</p><div class="term-row"><b>Why?</b><span>Serve our HTML/CSS page reliably without writing a server ourselves.</span></div><div class="term-row"><b>Input</b><span>HTTP request and website files.</span></div><div class="term-row"><b>Output</b><span>HTTP response containing the page or asset.</span></div><a href="https://www.google.com/search?tbm=isch&q=Nginx+web+server+logo+request+response+diagram" target="_blank" rel="noopener">Find Nginx images <i class="bi bi-box-arrow-up-right"></i></a></article>
+  <article class="tool-card kube-card"><div class="tool-top"><div class="tool-symbol"><i class="bi bi-diagram-3-fill"></i></div><span>ORCHESTRATION</span></div><h3>Kubernetes (K8s)</h3><p>An orchestration system that manages containerized workloads and services.</p><div class="term-row"><b>Why?</b><span>Manage desired replicas, service discovery, rollout, and replacement of failed Pods.</span></div><div class="term-row"><b>Input</b><span>YAML manifests and container images.</span></div><div class="term-row"><b>Output</b><span>Pods, Deployments, Services, and a reconciled desired state.</span></div><a href="https://www.google.com/search?tbm=isch&q=Kubernetes+cluster+pods+deployment+service+diagram" target="_blank" rel="noopener">Find Kubernetes images <i class="bi bi-box-arrow-up-right"></i></a></article>
+ </div>
+ <div class="callout callout-blue mt-4"><b>Remember this one-line summary:</b> Git records code → GitHub shares code → Jenkins automates steps → Docker packages and runs the app → Kubernetes manages application replicas and access.</div>
+</section>
+
+<section id="architecture" class="content-section">
+ <div class="section-label label-orange">HOW THE TOOLS COMBINE</div><h2>End-to-end DevOps architecture</h2>
+ <p>Imagine a developer changes a heading on the website. The workflow below shows how the change moves from a laptop to a running application.</p>
+ <div class="architecture">
+  <div class="arch-step s-blue"><div class="arch-icon"><i class="bi bi-person-workspace"></i></div><b>1. Developer</b><small>Edit files in VS Code</small></div><div class="arch-arrow"><i class="bi bi-arrow-right"></i><small>commit + push</small></div>
+  <div class="arch-step s-purple"><div class="arch-icon"><i class="bi bi-github"></i></div><b>2. GitHub</b><small>Stores versioned source</small></div><div class="arch-arrow"><i class="bi bi-arrow-right"></i><small>checkout</small></div>
+  <div class="arch-step s-red"><div class="arch-icon"><i class="bi bi-gear-wide-connected"></i></div><b>3. Jenkins</b><small>Runs the pipeline</small></div><div class="arch-arrow"><i class="bi bi-arrow-right"></i><small>build</small></div>
+  <div class="arch-step s-cyan"><div class="arch-icon"><i class="bi bi-box-seam-fill"></i></div><b>4. Docker</b><small>Creates an image</small></div><div class="arch-arrow"><i class="bi bi-arrow-right"></i><small>deploy image</small></div>
+  <div class="arch-step s-green"><div class="arch-icon"><i class="bi bi-diagram-3-fill"></i></div><b>5. Kubernetes</b><small>Runs and manages Pods</small></div>
+ </div>
+ <div class="row g-3 mt-2">
+  <div class="col-md-4"><div class="concept-note"><b>CI — Continuous Integration</b><p>Changes are regularly merged and automatically built/tested so mistakes are caught early.</p></div></div>
+  <div class="col-md-4"><div class="concept-note"><b>Continuous Delivery</b><p>The software is automatically built and prepared for release, usually with an approval before production.</p></div></div>
+  <div class="col-md-4"><div class="concept-note"><b>Continuous Deployment</b><p>Every change that passes the pipeline is automatically released to the target environment.</p></div></div>
+ </div>
+ <div class="callout callout-amber mt-3"><b>Scope of this practical guide:</b> Jenkins will build and run a local Docker container. Then we will separately deploy the same application image to local Kubernetes. A production setup usually adds an image registry, automated tests, secrets management, approvals, and a carefully designed deployment strategy.</div>
+</section>
+
+<section id="git" class="content-section">
+ <div class="section-label label-blue">PART 1 · SOURCE CONTROL</div><h2>Step-by-step: Git and GitHub</h2>
+ <div class="step-block"><div class="step-number">01</div><div class="step-content"><h3>Check Git and Docker</h3><span class="where">WHERE: VS Code → Terminal → New Terminal</span><pre class="code"><code>git --version
+docker --version
+docker info</code><button class="copy-btn">Copy</button></pre><p><b>Why:</b> the version commands verify the programs are installed. <code>docker info</code> checks whether the Docker engine is reachable.</p><p><b>Expected:</b> version numbers appear and Docker information is printed. If the daemon is unavailable, open Docker Desktop and wait for it to start.</p></div></div>
+ <div class="step-block"><div class="step-number">02</div><div class="step-content"><h3>Create a project folder</h3><span class="where">WHERE: VS Code terminal</span><pre class="code"><code>mkdir devops-site
+cd devops-site
+git init
+git branch -M main</code><button class="copy-btn">Copy</button></pre><p><b>Line by line:</b> <code>mkdir</code> creates a folder; <code>cd</code> enters it; <code>git init</code> starts a local repository; <code>git branch -M main</code> names the current branch <code>main</code>.</p><p><b>Then:</b> VS Code → File → Open Folder → select <code>devops-site</code>. Use this as the main project folder for the rest of the lab.</p></div></div>
+ <div class="step-block"><div class="step-number">03</div><div class="step-content"><h3>Create .gitignore</h3><span class="where">WHERE: VS Code Explorer → New File → .gitignore</span><pre class="code"><code>.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+node_modules/
+.venv/
+__pycache__/</code><button class="copy-btn">Copy</button></pre><p><b>Why:</b> it tells Git to ignore common machine-specific files and secret configuration files. Never commit passwords or API keys.</p></div></div>
+ <div class="step-block"><div class="step-number">04</div><div class="step-content"><h3>Commit a first snapshot</h3><span class="where">WHERE: VS Code terminal, inside devops-site</span><pre class="code"><code>git status
+git add .gitignore
+git diff --staged
+git commit -m "Add ignore rules"</code><button class="copy-btn">Copy</button></pre><p><b>Terms:</b> working tree = files you edit; staging area = changes selected for the next commit; commit = a recorded snapshot. If Git asks for identity, configure your name/email with <code>git config --global user.name "Your Name"</code> and <code>git config --global user.email "you@example.com"</code>.</p></div></div>
+ <div class="step-block"><div class="step-number">05</div><div class="step-content"><h3>Create a GitHub repository and connect it</h3><span class="where">WHERE: Browser first, then VS Code terminal</span><ol><li>Open <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a> and sign in.</li><li>Create a new repository named <code>devops-site</code>. For this lab, leave it empty (do not add a README online).</li><li>Copy the HTTPS URL from the repository page.</li></ol><pre class="code"><code>git remote add origin https://github.com/YOUR-USERNAME/devops-site.git
+git remote -v
+git push -u origin main</code><button class="copy-btn">Copy</button></pre><p>Replace <code>YOUR-USERNAME</code>. A remote is a saved address to another repository; <code>origin</code> is its usual nickname; <code>push</code> uploads local commits.</p><div class="callout callout-amber">If the remote already exists, do not add it again. Check with <code>git remote -v</code>. To correct its URL, use <code>git remote set-url origin https://github.com/YOUR-USERNAME/devops-site.git</code>.</div></div></div>
+</section>
+
+<section id="website" class="content-section">
+ <div class="section-label label-purple">PART 2 · THE APP</div><h2>Step-by-step: build the website to deploy</h2>
+ <p>We will create one static page. HTML gives the structure, CSS gives the style, Bootstrap supplies responsive components, and JavaScript adds a small interaction. Nginx will serve these files.</p>
+ <div class="step-block"><div class="step-number">06</div><div class="step-content"><h3>Create index.html</h3><span class="where">WHERE: VS Code editor → devops-site/index.html</span><p>In Explorer, click New File, name it <code>index.html</code>, paste the complete code below, then save.</p>
+ <pre class="code large"><code>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Mevi DevOps learning guide&lt;/title&gt;
+  &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;nav class="navbar navbar-dark bg-dark"&gt;
+    &lt;div class="container"&gt;&lt;span class="navbar-brand"&gt;MEVI TECHNOLOGIES · DEVOPS LAB&lt;/span&gt;&lt;/div&gt;
+  &lt;/nav&gt;
+  &lt;main class="container py-5"&gt;
+    &lt;section class="hero-panel p-4 p-md-5 rounded-4"&gt;
+      &lt;span class="badge text-bg-warning mb-3"&gt;DEVOPS LEARNING GUIDE&lt;/span&gt;
+      &lt;h1&gt;From Git Commit to Kubernetes&lt;/h1&gt;
+      &lt;p class="lead"&gt;Build it. Automate it. Containerise it. Deploy it.&lt;/p&gt;
+      &lt;button id="helloBtn" class="btn btn-light fw-bold"&gt;Test JavaScript&lt;/button&gt;
+      &lt;p id="result" class="mt-3 mb-0" aria-live="polite"&gt;&lt;/p&gt;
+    &lt;/section&gt;
+    &lt;section class="row g-3 mt-3"&gt;
+      &lt;div class="col-md-4"&gt;&lt;article class="card h-100"&gt;&lt;div class="card-body"&gt;&lt;h2 class="h5"&gt;Git + GitHub&lt;/h2&gt;&lt;p&gt;Track and share code.&lt;/p&gt;&lt;/div&gt;&lt;/article&gt;&lt;/div&gt;
+      &lt;div class="col-md-4"&gt;&lt;article class="card h-100"&gt;&lt;div class="card-body"&gt;&lt;h2 class="h5"&gt;Jenkins + Docker&lt;/h2&gt;&lt;p&gt;Automate the build and run the image.&lt;/p&gt;&lt;/div&gt;&lt;/article&gt;&lt;/div&gt;
+      &lt;div class="col-md-4"&gt;&lt;article class="card h-100"&gt;&lt;div class="card-body"&gt;&lt;h2 class="h5"&gt;Kubernetes&lt;/h2&gt;&lt;p&gt;Manage app replicas and access.&lt;/p&gt;&lt;/div&gt;&lt;/article&gt;&lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+  &lt;footer class="container py-4 text-secondary small"&gt;Mevi Technologies · DevOps Learning Guide&lt;/footer&gt;
+  &lt;script&gt;
+    document.getElementById("helloBtn").addEventListener("click", () =&gt; {
+      document.getElementById("result").textContent =
+        "Success! HTML, CSS, Bootstrap and JavaScript are working.";
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code><button class="copy-btn">Copy</button></pre>
+ <p><b>What to notice:</b> <code>href="style.css"</code> connects the stylesheet; <code>id="helloBtn"</code> gives JavaScript a way to find the button; <code>textContent</code> updates text safely.</p></div></div>
+ <div class="step-block"><div class="step-number">07</div><div class="step-content"><h3>Create style.css</h3><span class="where">WHERE: VS Code editor → devops-site/style.css</span><pre class="code"><code>body {
+  background: #f3f7fc;
+  color: #18304e;
+}
+.hero-panel {
+  color: #fff;
+  background: linear-gradient(130deg, #132f59, #287ac2);
+  box-shadow: 0 16px 36px rgba(23, 66, 117, .18);
+}
+.hero-panel h1 {
+  font-weight: 800;
+  letter-spacing: -.04em;
+}
+.card {
+  border: 1px solid #dfe8f2;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(20, 45, 80, .06);
+}
+#result { font-weight: 700; }</code><button class="copy-btn">Copy</button></pre><p>Save the file. The browser loads this file because the HTML contains a stylesheet link to <code>style.css</code>.</p></div></div>
+ <div class="step-block"><div class="step-number">08</div><div class="step-content"><h3>Test the page, then push it</h3><span class="where">WHERE: Browser, then VS Code terminal</span><p>Right-click <code>index.html</code> in VS Code and choose Open with Live Server if installed. Otherwise open the file directly in your browser. Click <b>Test JavaScript</b>.</p><pre class="code"><code>git add index.html style.css
+git commit -m "Add colourful DevOps learning guide website"
+git push</code><button class="copy-btn">Copy</button></pre><p>After pushing, refresh the GitHub repository page and confirm both files are present.</p></div></div>
+</section>
+
+<section id="docker" class="content-section">
+ <div class="section-label label-cyan">PART 3 · CONTAINERISE</div><h2>Docker + Nginx: package and host the website</h2>
+ <div class="image-explainer">
+  <div class="image-box image-nginx"><div class="image-icon"><i class="bi bi-globe2"></i></div><b>Nginx</b><small>Serves the page</small></div>
+  <div class="image-explainer-text"><h3>What is Nginx and why are we using it?</h3><p>Nginx (pronounced “engine-x”) is web-server software. A browser sends an HTTP request; Nginx looks for the requested file and sends an HTTP response. It can also be configured as a reverse proxy or load balancer. Here, it serves our static <code>index.html</code> and <code>style.css</code>.</p><p class="mb-0"><b>Why not open the file only?</b> Opening a file checks the page locally, but running Nginx in a container demonstrates how a web server hosts the content on a network port.</p><a href="https://www.google.com/search?tbm=isch&q=Nginx+HTTP+request+response+web+server+diagram" target="_blank" rel="noopener">Open image search: how Nginx works <i class="bi bi-box-arrow-up-right"></i></a></div>
+ </div>
+ <div class="step-block"><div class="step-number">09</div><div class="step-content"><h3>Create a Dockerfile</h3><span class="where">WHERE: VS Code editor → project root → New File → Dockerfile</span><pre class="code"><code>FROM nginx:alpine
+COPY index.html /usr/share/nginx/html/index.html
+COPY style.css /usr/share/nginx/html/style.css
+EXPOSE 80</code><button class="copy-btn">Copy</button></pre><ul><li><code>FROM</code>: choose the base image containing Nginx.</li><li><code>COPY</code>: copy our two website files into Nginx's default web directory.</li><li><code>EXPOSE 80</code>: documents that the container expects web traffic on port 80; it does not publish the port to the host by itself.</li></ul></div></div>
+ <div class="step-block"><div class="step-number">10</div><div class="step-content"><h3>Build the image</h3><span class="where">WHERE: VS Code terminal → project root</span><pre class="code"><code>docker build -t devops-site:1.0 .
+docker image ls</code><button class="copy-btn">Copy</button></pre><p><b>Break down the command:</b> <code>docker build</code> builds an image; <code>-t</code> gives it a name and tag; <code>devops-site:1.0</code> is the image name/version; the final dot means “use this current folder as the build context”.</p><p><b>Expected:</b> the build finishes successfully and <code>docker image ls</code> lists <code>devops-site</code>.</p></div></div>
+ <div class="step-block"><div class="step-number">11</div><div class="step-content"><h3>Run the container and publish a port</h3><span class="where">WHERE: VS Code terminal</span><pre class="code"><code>docker run --name site-manual -d -p 8085:80 devops-site:1.0
+docker ps</code><button class="copy-btn">Copy</button></pre><div class="port-map"><div><i class="bi bi-laptop"></i><b>Your computer</b><span>Host port 8085</span><small>localhost:8085</small></div><div class="port-map-arrow"><b>8085 → 80</b><i class="bi bi-arrow-right"></i></div><div><i class="bi bi-box"></i><b>Container</b><span>Nginx port 80</span><small>Serves index.html</small></div></div><p>Open <a href="http://localhost:8085" target="_blank" rel="noopener">http://localhost:8085</a> in the browser. If your page appears, the website is hosted locally.</p><p><b>Why map ports?</b> The server listens on port 80 inside the container. <code>-p 8085:80</code> makes it reachable through port 8085 on your computer.</p></div></div>
+ <div class="step-block"><div class="step-number">12</div><div class="step-content"><h3>Clean up before Jenkins deployment</h3><span class="where">WHERE: VS Code terminal</span><pre class="code"><code>docker rm -f site-manual</code><button class="copy-btn">Copy</button></pre><p>We will let Jenkins create a container with a different name. Removing this manual test container prevents a conflict on port 8085. The image remains available.</p></div></div>
+</section>
+
+<section id="jenkins" class="content-section">
+ <div class="section-label label-red">PART 4 · AUTOMATE</div><h2>Jenkins: installation, working, and pipeline</h2>
+ <div class="image-explainer jenkins-explainer">
+  <div class="jenkins-mark"><i class="bi bi-gear-wide-connected"></i><strong>Jenkins</strong><small>Automation server</small></div>
+  <div class="image-explainer-text"><h3>How Jenkins works</h3><ol><li>A developer pushes a commit to GitHub.</li><li>Jenkins checks out the selected version of the source code.</li><li>A Pipeline runs its stages in order, such as validation, tests, and Docker build.</li><li>The pipeline records console output and reports success or failure.</li><li>In this classroom lab, a final stage starts the website container on the Docker host.</li></ol><a href="https://www.google.com/search?tbm=isch&q=Jenkins+pipeline+checkout+build+test+deploy+diagram" target="_blank" rel="noopener">Open image search: Jenkins pipeline workflow <i class="bi bi-box-arrow-up-right"></i></a></div>
+ </div>
+ <div class="definition-row"><div><b>Job</b><p>A configured unit of work Jenkins can run.</p></div><div><b>Pipeline</b><p>A defined sequence of stages and steps.</p></div><div><b>Jenkinsfile</b><p>A text file that stores the pipeline definition alongside the source code.</p></div><div><b>Build</b><p>One execution of the job or pipeline.</p></div></div>
+ <div class="callout callout-amber"><b>Security and platform note:</b> To build Docker images from inside Jenkins, Jenkins needs access to a Docker daemon. Mounting <code>/var/run/docker.sock</code> is a convenient classroom shortcut on many Docker Desktop setups, but it gives Jenkins powerful control over the host's Docker engine. Use it only on a trusted disposable learning guide environment; do not run untrusted pipeline code this way. The official Jenkins documentation also describes a Docker-in-Docker setup using a separate Docker daemon and TLS.</div>
+ <div class="step-block"><div class="step-number">13</div><div class="step-content"><h3>Create a custom Jenkins image with Docker CLI</h3><span class="where">WHERE: VS Code Explorer → create folder jenkins → create jenkins/Dockerfile</span><pre class="code"><code>FROM jenkins/jenkins:lts-jdk21
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends docker.io \
+    && rm -rf /var/lib/apt/lists/*
+USER jenkins</code><button class="copy-btn">Copy</button></pre><p>The official Jenkins image is the base. The Docker CLI package adds the <code>docker</code> command inside the Jenkins container. The daemon itself is not installed by this Dockerfile; the next step mounts the host Docker socket for this local lab.</p><p><b>Note:</b> this simple classroom Dockerfile uses the distribution's Docker CLI package. If package installation fails or the client cannot talk to the host daemon, follow the official Jenkins Docker installation guide linked at the bottom.</p></div></div>
+ <div class="step-block"><div class="step-number">14</div><div class="step-content"><h3>Build and run Jenkins</h3><span class="where">WHERE: VS Code terminal → project root</span><pre class="code"><code>docker build -t mevi-jenkins-lab:1.0 ./jenkins
+docker volume create jenkins_home
+docker run -d --name jenkins-\
+  -p 8080:8080 -p 50000:50000 \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  mevi-jenkins-lab:1.0</code><button class="copy-btn">Copy</button></pre><p><b>What the options mean:</b> port 8080 is Jenkins' browser UI; 50000 is commonly used for inbound agents; <code>jenkins_home</code> is a named volume that preserves Jenkins settings and jobs; the socket mount gives Jenkins access to the host Docker engine.</p><p><b>Check:</b> run <code>docker ps</code> and wait for the Jenkins container to be running. Open <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a>. First startup may take a few minutes.</p><div class="callout callout-blue">If port 8080 is already in use, change the left side to another host port, for example <code>-p 8089:8080</code>, then open <code>http://localhost:8089</code>. The Jenkins internal port remains 8080.</div></div></div>
+ <div class="step-block"><div class="step-number">15</div><div class="step-content"><h3>Unlock Jenkins</h3><span class="where">WHERE: VS Code terminal, then browser</span><pre class="code"><code>docker exec jenkins-cat /var/jenkins_home/secrets/initialAdminPassword</code><button class="copy-btn">Copy</button></pre><p>Copy the printed initial password into the unlock screen. Install suggested plugins and create an administrator account. Keep the password private. Jenkins stores its configuration under <code>JENKINS_HOME</code>, which is why the named volume matters.</p></div></div>
+ <div class="step-block"><div class="step-number">16</div><div class="step-content"><h3>Check Docker access from Jenkins</h3><span class="where">WHERE: VS Code terminal</span><pre class="code"><code>docker exec jenkins-docker version</code><button class="copy-btn">Copy</button></pre><p>The output should show client and server details. If it says it cannot connect to the daemon, stop here and fix access before creating the pipeline.</p></div></div>
+</section>
+
+<section id="pipeline" class="content-section">
+ <div class="section-label label-orange">PART 5 · JENKINSFILE</div><h2>Build the automated CI/CD pipeline</h2>
+ <p>We will use a Pipeline job that reads a <code>Jenkinsfile</code> from the GitHub repository. The pipeline checks out the source, verifies files, builds the image, and runs the website.</p>
+ <div class="pipeline-visual"><div><span>STAGE 1</span><i class="bi bi-github"></i><b>Checkout</b><small>Fetch source</small></div><i class="bi bi-arrow-right"></i><div><span>STAGE 2</span><i class="bi bi-check2-square"></i><b>Validate</b><small>Check files</small></div><i class="bi bi-arrow-right"></i><div><span>STAGE 3</span><i class="bi bi-box-seam"></i><b>Build</b><small>Create image</small></div><i class="bi bi-arrow-right"></i><div><span>STAGE 4</span><i class="bi bi-rocket-takeoff"></i><b>Deploy</b><small>Run container</small></div></div>
+ <div class="step-block"><div class="step-number">17</div><div class="step-content"><h3>Create Jenkinsfile</h3><span class="where">WHERE: VS Code editor → project root → New File → Jenkinsfile</span><p>Replace <code>YOUR-USERNAME</code> with your GitHub username. The repository should be public for this simplest no-credentials example; private repositories need credentials configured securely in Jenkins.</p>
+ <pre class="code large"><code>pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'devops-site:1.0'
+        CONTAINER_NAME = 'site-ci'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/YOUR-USERNAME/devops-site.git'
+            }
+        }
+
+        stage('Validate files') {
+            steps {
+                sh 'test -f index.html'
+                sh 'test -f style.css'
+                sh 'test -f Dockerfile'
+                echo 'Required files are present.'
+            }
+        }
+
+        stage('Build Docker image') {
+            steps {
+                sh 'docker build -t ${IMAGE_NAME} .'
+            }
+        }
+
+        stage('Deploy website') {
+            steps {
+                sh 'docker rm -f ${CONTAINER_NAME} || true'
+                sh 'docker run -d --name ${CONTAINER_NAME} -p 8085:80 ${IMAGE_NAME}'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Success. Test the site at http://localhost:8085 on the Docker host.'
+        }
+        failure {
+            echo 'Pipeline failed. Open the failed build Console Output and inspect the first error.'
+        }
+    }
+}</code><button class="copy-btn">Copy</button></pre>
+ <p><b>Explain the syntax:</b> <code>pipeline</code> is the pipeline definition; <code>agent any</code> asks Jenkins to use an available agent; <code>environment</code> stores reusable values; each <code>stage</code> groups related work; <code>steps</code> run commands; <code>post</code> handles success/failure messages.</p>
+ <div class="callout callout-amber">This example is intentionally a simple classroom pipeline. It uses a fixed image tag and deploys on the same Docker host. Real CI/CD should add tests, immutable version tags, a registry, secure credentials, approvals, health checks, and a safe deployment strategy.</div>
+ </div></div>
+ <div class="step-block"><div class="step-number">18</div><div class="step-content"><h3>Commit and push the pipeline</h3><span class="where">WHERE: VS Code terminal → project root</span><pre class="code"><code>git add Dockerfile Jenkinsfile index.html style.css .gitignore
+git commit -m "Add Docker image and Jenkins pipeline"
+git push</code><button class="copy-btn">Copy</button></pre><p>If it says “nothing to commit”, check <code>git status</code>. Confirm that the Jenkinsfile and Dockerfile are visible in GitHub.</p></div></div>
+ <div class="step-block"><div class="step-number">19</div><div class="step-content"><h3>Create a Pipeline job in Jenkins</h3><span class="where">WHERE: Jenkins web UI → browser at localhost:8080</span><ol><li>Sign in and click <b>New Item</b>.</li><li>Name it <code>website-pipeline</code>.</li><li>Select <b>Pipeline</b>, then click OK.</li><li>Scroll to the Pipeline section.</li><li>For Definition, choose <b>Pipeline script from SCM</b>.</li><li>For SCM, choose <b>Git</b>; enter the GitHub repository URL.</li><li>Set Branch Specifier to <code>*/main</code>; Script Path to <code>Jenkinsfile</code>.</li><li>Click Save, then <b>Build Now</b>.</li></ol><p><b>Where to see results:</b> click the build number → Console Output. Follow the stages. A successful pipeline should finish without a red failed status.</p></div></div>
+ <div class="step-block"><div class="step-number">20</div><div class="step-content"><h3>Verify the deployed page</h3><span class="where">WHERE: Browser on the computer running Docker Desktop</span><p>Open <a href="http://localhost:8085" target="_blank" rel="noopener">http://localhost:8085</a>. This is local hosting, not a public website. If it fails, check <code>docker ps</code>, <code>docker logs site-ci</code>, and the Jenkins Console Output.</p></div></div>
+</section>
+
+<section id="kubernetes" class="content-section">
+ <div class="section-label label-green">PART 6 · ORCHESTRATE</div><h2>Kubernetes in Docker Desktop: detailed practical tutorial</h2>
+ <div class="image-explainer kube-explainer"><div class="kube-logo"><i class="bi bi-diagram-3-fill"></i><strong>Kubernetes</strong><small>Container orchestration</small></div><div class="image-explainer-text"><h3>What Kubernetes does</h3><p>Kubernetes watches the actual state of an application and tries to make it match the desired state described in manifests. For example, if a Deployment requests two Pods, Kubernetes works to keep two suitable replicas running. If a Pod fails, a controller can replace it. A Service provides a stable way to reach a changing set of Pods.</p><a href="https://www.google.com/search?tbm=isch&q=Kubernetes+architecture+control+plane+node+pods+service+diagram" target="_blank" rel="noopener">Open image search: Kubernetes architecture <i class="bi bi-box-arrow-up-right"></i></a></div></div>
+ <h3>Why do we need Kubernetes after Docker?</h3><div class="comparison"><div><h4><i class="bi bi-box-seam"></i> Docker alone</h4><ul><li>Build and run individual containers.</li><li>You manually start/stop and manage many instances.</li><li>Networking and recovery need to be configured for your app.</li></ul></div><div><h4><i class="bi bi-diagram-3"></i> Kubernetes</h4><ul><li>Declares the desired state for workloads.</li><li>Maintains the requested number of replicas.</li><li>Provides Deployments, Services, rollouts, and workload management.</li></ul></div></div>
+ <h3>Kubernetes terms you must understand</h3>
+ <div class="kube-term-grid">
+  <article><span class="term-icon ti-purple"><i class="bi bi-cloud"></i></span><b>Cluster</b><p>The Kubernetes environment that manages workloads.</p></article>
+  <article><span class="term-icon ti-blue"><i class="bi bi-cpu"></i></span><b>Node</b><p>A machine or worker environment that runs Pods.</p></article>
+  <article><span class="term-icon ti-green"><i class="bi bi-box"></i></span><b>Pod</b><p>The smallest deployable unit; often contains one app container.</p></article>
+  <article><span class="term-icon ti-orange"><i class="bi bi-arrow-repeat"></i></span><b>Deployment</b><p>Declares the desired app version and replica count.</p></article>
+  <article><span class="term-icon ti-red"><i class="bi bi-signpost-2"></i></span><b>Service</b><p>A stable network endpoint that routes to matching Pods.</p></article>
+  <article><span class="term-icon ti-cyan"><i class="bi bi-filetype-yml"></i></span><b>Manifest</b><p>A YAML/JSON declaration of resources and desired configuration.</p></article>
+ </div>
+ <h3>How Deployment and Service fit together</h3>
+ <div class="kube-architecture">
+  <div class="kube-user"><i class="bi bi-browser-chrome"></i><b>Browser</b><small>localhost:30080</small></div><div class="down-arrow"><i class="bi bi-arrow-down"></i><span>request</span></div>
+  <div class="kube-service"><i class="bi bi-signpost-2-fill"></i><b>Service: web-service</b><small>stable access to matching Pods</small></div><div class="down-arrow"><i class="bi bi-arrow-down"></i><span>routes traffic</span></div>
+  <div class="kube-deployment"><b>Deployment: web · desired replicas: 2</b><div class="kube-pods"><div><i class="bi bi-box-fill"></i><b>Pod A</b><small>Nginx :80</small></div><div><i class="bi bi-box-fill"></i><b>Pod B</b><small>Nginx :80</small></div></div></div>
+ </div>
+ <div class="step-block"><div class="step-number">21</div><div class="step-content"><h3>Enable Kubernetes in Docker Desktop</h3><span class="where">WHERE: Docker Desktop application</span><ol><li>Open Docker Desktop and confirm the Docker engine is running.</li><li>Find the Kubernetes section/view in Docker Desktop. The exact UI depends on the version.</li><li>If your version offers a local Kubernetes cluster, choose the option to create/enable it and wait for the status to become ready.</li><li>Initial setup can download components and take several minutes.</li></ol><p>Recent Docker Desktop versions may present a Kubernetes view with a “Create cluster” workflow. Choose the default single-node option for a basic student lab if available. If your installed version has different options, use its built-in documentation rather than assuming every version has the same button.</p><a href="https://docs.docker.com/desktop/use-desktop/kubernetes/" target="_blank" rel="noopener">Official Docker Desktop Kubernetes instructions <i class="bi bi-box-arrow-up-right"></i></a></div></div>
+ <div class="step-block"><div class="step-number">22</div><div class="step-content"><h3>Check kubectl and the current cluster</h3><span class="where">WHERE: VS Code terminal</span><pre class="code"><code>kubectl version --client
+kubectl config get-contexts
+kubectl config current-context
+kubectl get nodes</code><button class="copy-btn">Copy</button></pre><p><b>kubectl</b> is the command-line client for the Kubernetes API. A <b>context</b> identifies which cluster and credentials kubectl will use. The node should show <code>Ready</code> when the cluster is ready.</p><p>If the intended local context is named <code>docker-desktop</code> and appears in the context list, select it with <code>kubectl config use-context docker-desktop</code>. Do not change contexts blindly if you also use a work or cloud cluster.</p></div></div>
+ <div class="step-block"><div class="step-number">23</div><div class="step-content"><h3>Build the image for Kubernetes</h3><span class="where">WHERE: VS Code terminal → project root</span><pre class="code"><code>docker build -t devops-site:1.0 .
+docker image ls devops-site</code><button class="copy-btn">Copy</button></pre><p>Kubernetes needs to be able to obtain the image. Depending on Docker Desktop version and cluster runtime, a locally built image may or may not be visible to the cluster. If a Pod reports <code>ImagePullBackOff</code>, inspect Pod events; use a registry or the supported image-loading method for your cluster.</p></div></div>
+ <div class="step-block"><div class="step-number">24</div><div class="step-content"><h3>Create a Kubernetes manifest</h3><span class="where">WHERE: VS Code Explorer → create folder k8s → create file site.yaml</span><pre class="code large"><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: website
+          image: devops-site:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080</code><button class="copy-btn">Copy</button></pre><p><b>Deployment section:</b> asks for two replicas, selects Pods with label <code>app: web</code>, and starts the website container from the named image.</p><p><b>Service section:</b> finds Pods with the same label and forwards traffic to port 80. <code>nodePort: 30080</code> requests a NodePort for this local exercise.</p><p><b>YAML rule:</b> indentation matters. Use spaces, not tabs. Save the file.</p></div></div>
+ <div class="step-block"><div class="step-number">25</div><div class="step-content"><h3>Apply the manifest and inspect resources</h3><span class="where">WHERE: VS Code terminal → project root</span><pre class="code"><code>kubectl apply -f k8s/site.yaml
+kubectl get deployments
+kubectl get pods
+kubectl get services
+kubectl describe deployment web</code><button class="copy-btn">Copy</button></pre><p><b>Expected:</b> Deployment reports ready replicas; Pods become <code>Running</code> and <code>READY 1/1</code>; Service is listed with port information. Wait a little after applying; image startup is not always instant.</p><p>If a Pod is not ready, run <code>kubectl describe pod POD-NAME</code> and read the Events section. Replace <code>POD-NAME</code> with the actual name from <code>kubectl get pods</code>.</p></div></div>
+ <div class="step-block"><div class="step-number">26</div><div class="step-content"><h3>Open the Kubernetes-hosted page</h3><span class="where">WHERE: Browser</span><p>Try <a href="http://localhost:30080" target="_blank" rel="noopener">http://localhost:30080</a>. Accessing NodePort from the host can vary with Docker Desktop versions and cluster configuration.</p><p><b>Reliable diagnostic option:</b> if the NodePort URL does not open, run this in a separate terminal and leave it running:</p><pre class="code"><code>kubectl port-forward service/web-service 8086:80</code><button class="copy-btn">Copy</button></pre><p>Now open <a href="http://localhost:8086" target="_blank" rel="noopener">http://localhost:8086</a>. The terminal running port-forward must remain open until you finish testing.</p></div></div>
+ <div class="step-block"><div class="step-number">27</div><div class="step-content"><h3>Scale the Deployment</h3><span class="where">WHERE: VS Code terminal</span><pre class="code"><code>kubectl scale deployment/web --replicas=3
+kubectl get pods -o wide
+kubectl scale deployment/web --replicas=2</code><button class="copy-btn">Copy</button></pre><p>Scaling changes the desired number of replicas. Kubernetes reconciles the actual state toward that desired count. You should see a third Pod appear, then disappear when scaling back to two.</p></div></div>
+ <div class="step-block"><div class="step-number">28</div><div class="step-content"><h3>Practice an update and rollback</h3><span class="where">WHERE: VS Code terminal</span><p>First change a visible sentence in <code>index.html</code>. Then build a new tag and update the Deployment:</p><pre class="code"><code>docker build -t devops-site:1.1 .
+kubectl set image deployment/web website=devops-site:1.1
+kubectl rollout status deployment/web
+kubectl rollout history deployment/web</code><button class="copy-btn">Copy</button></pre><p>For rollback practice, use <code>kubectl rollout undo deployment/web</code>. Ensure the cluster can access image tag <code>1.1</code>; if it cannot see local images, load/push the image using the method supported by your cluster runtime.</p></div></div>
+ <div class="step-block"><div class="step-number">29</div><div class="step-content"><h3>Clean up Kubernetes resources</h3><span class="where">WHERE: VS Code terminal</span><pre class="code"><code>kubectl delete -f k8s/site.yaml</code><button class="copy-btn">Copy</button></pre><p>This deletes the Deployment and Service defined in that manifest. It does not uninstall Kubernetes from Docker Desktop. You can stop the Jenkins container later with <code>docker stop jenkins-</code>; do not delete the <code>jenkins_home</code> volume unless you intentionally want to remove Jenkins' saved setup.</p></div></div>
+</section>
+
+<section id="troubleshoot" class="content-section">
+ <div class="section-label label-red">DEBUGGING PLAYBOOK</div><h2>Common errors: exact checks and fixes</h2>
+ <div class="accordion" id="errors">
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#e1">Docker says it cannot connect to the daemon</button></h3><div id="e1" class="accordion-collapse collapse show" data-bs-parent="#errors"><div class="accordion-body">Open Docker Desktop, wait until its engine is running, then retry <code>docker info</code>. Fix Docker startup before troubleshooting Jenkins or Kubernetes.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e2">Port is already allocated</button></h3><div id="e2" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">Run <code>docker ps</code> and inspect the PORTS column. Stop/remove only the lab container using the port, or change the host side of the mapping, e.g. <code>-p 8087:80</code>, then open <code>http://localhost:8087</code>.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e3">Container name already exists</button></h3><div id="e3" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">Run <code>docker ps -a</code>. If the named container is an old lab resource you no longer need, remove that specific one with <code>docker rm -f NAME</code>. Do not remove unrelated containers.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e4">Git push rejected or authentication failed</button></h3><div id="e4" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">Check <code>git status</code>, <code>git remote -v</code>, and the branch name. Authenticate through GitHub's supported browser/credential flow. Do not put passwords or tokens in the repository. If histories differ, inspect before merging; do not blindly force-push.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e5">Jenkins pipeline cannot fetch GitHub</button></h3><div id="e5" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">Check the repository URL and branch. A public repository is simplest for class. A private repository needs a credential stored in Jenkins and referenced securely; never hard-code an access token in a Jenkinsfile.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e6">Jenkins says docker command not found</button></h3><div id="e6" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">Check the custom image build output and run <code>docker exec jenkins-docker version</code>. If the CLI was not installed, rebuild the custom Jenkins image and recreate its container while retaining the <code>jenkins_home</code> volume.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e7">Jenkins cannot connect to Docker</button></h3><div id="e7" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">Run <code>docker exec jenkins-docker version</code>. Verify the Docker socket setup is supported by your environment. Do not mount arbitrary host paths or use untrusted pipeline code to work around this. The official Jenkins Docker guide describes an alternative Docker-in-Docker approach.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e8">Pod is ImagePullBackOff / ErrImagePull</button></h3><div id="e8" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">Run <code>kubectl describe pod POD-NAME</code> and read Events. Check spelling/tag. Kubernetes may not see a locally built image in every Docker Desktop cluster/runtime. Use a registry or the supported image-loading method, then update the manifest.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e9">kubectl cannot connect to Kubernetes</button></h3><div id="e9" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">Wait for the cluster to finish starting. Run <code>kubectl config get-contexts</code>, <code>kubectl config current-context</code>, and <code>kubectl get nodes</code>. Select the intended local context only if it exists and is the correct cluster.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e10">Kubernetes service URL does not open</button></h3><div id="e10" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">Check <code>kubectl get pods</code> and <code>kubectl get services</code>. Confirm the Pods are ready and Service selectors match the Pod labels. Try <code>kubectl port-forward service/web-service 8086:80</code> and open <code>http://localhost:8086</code>.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#e11">Website changes do not appear</button></h3><div id="e11" class="accordion-collapse collapse" data-bs-parent="#errors"><div class="accordion-body">The existing image does not change when you edit a source file. Rebuild the image with a new tag, then recreate the Docker container or update the Kubernetes Deployment to the new tag. Refresh the browser after deployment.</div></div></div>
+ </div>
+</section>
+
+<section id="deliverable" class="content-section">
+ <div class="section-label label-green">COMPLETION</div><h2> final deliverable checklist</h2>
+ <p>Tick an item only after you have verified it on your own computer.</p>
+ <div class="final-checklist" id="finalChecklist">
+  <label><input type="checkbox"> I can explain the purpose of Git, GitHub, Jenkins, Docker, Nginx, and Kubernetes.</label>
+  <label><input type="checkbox"> I committed and pushed the website source to GitHub.</label>
+  <label><input type="checkbox"> I built a Docker image from the Dockerfile.</label>
+  <label><input type="checkbox"> I hosted the page at <code>http://localhost:8085</code>.</label>
+  <label><input type="checkbox"> Jenkins loaded the Jenkinsfile and completed the Pipeline.</label>
+  <label><input type="checkbox"> I enabled Kubernetes and confirmed a Ready node.</label>
+  <label><input type="checkbox"> I created a Deployment and Service from YAML.</label>
+  <label><input type="checkbox"> I tested the Kubernetes website and scaled the Deployment.</label>
+  <label><input type="checkbox"> I cleaned up the Kubernetes resources after the lab.</label>
+ </div>
+ <div class="deliverable-box mt-4"><i class="bi bi-trophy-fill"></i><div><b>End-of-day outcome</b><p class="mb-0">A GitHub repository with <code>index.html</code>, <code>style.css</code>, <code>Dockerfile</code>, <code>Jenkinsfile</code>, and <code>k8s/site.yaml</code>; a locally hosted website; and a Jenkins build plus Kubernetes deployment you can demonstrate.</p></div></div>
+</section>
+
+<section id="quiz" class="content-section">
+ <div class="section-label label-purple">REVIEW YOUR LEARNING</div><h2>Quick quiz</h2>
+ <div class="quiz-box">
+  <div class="quiz-question"><b>1. Which tool records source-code history?</b><label><input type="radio" name="q1" value="a"> Jenkins</label><label><input type="radio" name="q1" value="b"> Git</label><label><input type="radio" name="q1" value="c"> Kubernetes</label></div>
+  <div class="quiz-question"><b>2. What does Jenkins do in this learning guide?</b><label><input type="radio" name="q2" value="a"> Automates the build/deployment steps</label><label><input type="radio" name="q2" value="b"> Replaces HTML</label><label><input type="radio" name="q2" value="c"> Acts as the Kubernetes Pod</label></div>
+  <div class="quiz-question"><b>3. In <code>-p 8085:80</code>, what is 8085?</b><label><input type="radio" name="q3" value="a"> Container port</label><label><input type="radio" name="q3" value="b"> Host port</label><label><input type="radio" name="q3" value="c"> Image tag</label></div>
+  <div class="quiz-question"><b>4. What is the purpose of a Kubernetes Deployment?</b><label><input type="radio" name="q4" value="a"> Save Git commits</label><label><input type="radio" name="q4" value="b"> Maintain desired replicas and manage rollout</label><label><input type="radio" name="q4" value="c"> Serve the HTML file directly from VS Code</label></div>
+  <button id="gradeQuiz" class="btn btn-primary">Check answers</button><p id="quizResult" aria-live="polite" class="mt-3 mb-0"></p>
+ </div>
+ <h3 class="mt-4">Official documentation and image references</h3>
+ <div class="resource-grid">
+  <a href="https://www.jenkins.io/doc/book/installing/docker/" target="_blank" rel="noopener"><i class="bi bi-gear-wide-connected"></i><span><b>Jenkins in Docker</b><small>Official installation and Docker access guidance</small></span><i class="bi bi-box-arrow-up-right"></i></a>
+  <a href="https://www.jenkins.io/doc/book/pipeline/" target="_blank" rel="noopener"><i class="bi bi-diagram-3"></i><span><b>Jenkins Pipeline</b><small>Pipeline concepts and Jenkinsfile</small></span><i class="bi bi-box-arrow-up-right"></i></a>
+  <a href="https://docs.docker.com/desktop/use-desktop/kubernetes/" target="_blank" rel="noopener"><i class="bi bi-box-seam"></i><span><b>Docker Desktop Kubernetes</b><small>Cluster setup and Kubernetes view</small></span><i class="bi bi-box-arrow-up-right"></i></a>
+  <a href="https://kubernetes.io/docs/concepts/" target="_blank" rel="noopener"><i class="bi bi-diagram-3-fill"></i><span><b>Kubernetes concepts</b><small>Pods, Deployments, Services and more</small></span><i class="bi bi-box-arrow-up-right"></i></a>
+  <a href="https://docs.docker.com/" target="_blank" rel="noopener"><i class="bi bi-box-seam-fill"></i><span><b>Docker documentation</b><small>Images, containers, networking</small></span><i class="bi bi-box-arrow-up-right"></i></a>
+  <a href="https://nginx.org/en/docs/" target="_blank" rel="noopener"><i class="bi bi-globe2"></i><span><b>Nginx documentation</b><small>Web server documentation</small></span><i class="bi bi-box-arrow-up-right"></i></a>
+ </div>
+ <p class="small text-secondary mt-3">Image-search links in each tool card open Google Images for classroom visuals. They are search links, not embedded images. Use images you have permission to reuse in published material.</p>
+</section>
+
+<footer class="site-footer"><div class="footer-mark"><img src="https://www.mevitechnologies.com/static/img/MeviLOGO.png" alt="Mevi Technologies logo"></div><b>MEVI TECHNOLOGIES · DEVOPS LEARNING GUIDE</b><p>Understand it → build it → automate it → deploy it → verify it.</p></footer>
+</main>
+</div></div>
+<button id="backTop" class="back-top" aria-label="Back to top"><i class="bi bi-arrow-up"></i></button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
